@@ -20,61 +20,142 @@
         LANG=C Rscript $__tool_directory__/CAMERA.r
     </token>
 
-    <!-- zipfile load for planemo test -->
+    <!-- raw file load for planemo test -->
     <token name="@COMMAND_FILE_LOAD@">
-        #if $file_load_conditional.file_load_select == "yes":
-            #if $file_load_conditional.inputs.input == "zip_file":
-                zipfile '$file_load_conditional.inputs.zip_file'
+        #if $file_load_section.file_load_conditional.file_load_select == "yes":
+            #if $file_load_section.file_load_conditional.inputs.input == "zip_file":
+                zipfile '$file_load_section.file_load_conditional.inputs.zip_file'
             #else
-                #set singlefile_galaxyPath = ','.join( [ str( $single_file ) for $single_file in $file_load_conditional.inputs.single_file ] )
-                #set singlefile_sampleName = ','.join( [ str( $single_file.name ) for $single_file in $file_load_conditional.inputs.single_file ] )
+                #set singlefile_galaxyPath = ','.join( [ str( $single_file ) for $single_file in $file_load_section.file_load_conditional.inputs.single_file ] )
+                #set singlefile_sampleName = ','.join( [ str( $single_file.name ) for $single_file in $file_load_section.file_load_conditional.inputs.single_file ] )
 
                 singlefile_galaxyPath '$singlefile_galaxyPath' singlefile_sampleName '$singlefile_sampleName'
             #end if
         #end if
     </token>
 
-    <xml name="file_load">
-        <conditional name="file_load_conditional">
-            <param name="file_load_select" type="select" label="Resubmit your dataset or your zip file" help="Use only if you get a message which say that your original dataset or zip file have been deleted on the server." >
-                <option value="no" >no need</option>
-                <option value="yes" >yes</option>
-            </param>
-            <when value="no">
-            </when>
-            <when value="yes">
-                <conditional name="inputs">
-                    <param name="input" type="select" label="Choose your inputs method" >
-                        <option value="zip_file" selected="true">Zip file from your history containing your chromatograms</option>
-                        <option value="single_file">A mzXML or netCDF file from your history</option>
-                    </param>
-                    <when value="zip_file">
-                        <param name="zip_file" type="data" format="no_unzip.zip,zip" label="Zip file" />
-                    </when>
-                    <when value="single_file">
-                        <param name="single_file" type="data" format="mzxml,netcdf" label="Single file"  multiple="true"/>
-                    </when>
-                </conditional>
-            </when>
-        </conditional>
+    <xml name="input_file_load">
+        <section name="file_load_section" title="Resubmit your raw dataset or your zip file">
+            <conditional name="file_load_conditional">
+                <param name="file_load_select" type="select" label="Resubmit your dataset or your zip file" help="Use only if you get a message which say that your original dataset or zip file have been deleted on the server." >
+                    <option value="no" >no need</option>
+                    <option value="yes" >yes</option>
+                </param>
+                <when value="no">
+                </when>
+                <when value="yes">
+                    <conditional name="inputs">
+                        <param name="input" type="select" label="Choose your inputs method" >
+                            <option value="zip_file" selected="true">Zip file from your history containing your chromatograms</option>
+                            <option value="single_file">A mzXML or netCDF file from your history</option>
+                        </param>
+                        <when value="zip_file">
+                            <param name="zip_file" type="data" format="no_unzip.zip,zip" label="Zip file" />
+                        </when>
+                        <when value="single_file">
+                            <param name="single_file" type="data" format="mzxml,netcdf" label="Single file"  multiple="true"/>
+                        </when>
+                    </conditional>
+                </when>
+            </conditional>
+        </section>
     </xml>
 
+    <xml name="test_file_load_zip">
+        <section name="file_load_section">
+            <conditional name="file_load_conditional">
+                <param name="file_load_select" value="yes" />
+                <conditional name="inputs">
+                    <param name="input" value="zip_file" />
+                    <param name="zip_file" value="faahKO_reduce.zip"  ftype="zip" />
+                </conditional>
+            </conditional>
+        </section>
+    </xml>
+
+    <xml name="test_file_load_single">
+        <section name="file_load_section">
+            <conditional name="file_load_conditional">
+                <param name="file_load_select" value="yes" />
+                <conditional name="inputs">
+                    <param name="input" value="single_file" />
+                    <param name="single_file" value="wt15.CDF,ko16.CDF,ko15.CDF,wt16.CDF"  ftype="netcdf" />
+                </conditional>
+            </conditional>
+        </section>
+    </xml>
+
+    <!-- peaklist export option management -->
     <token name="@COMMAND_PEAKLIST@">
-        convertRTMinute $convertRTMinute
-        numDigitsMZ $numDigitsMZ
-        numDigitsRT $numDigitsRT
-        intval $intval
+        convertRTMinute $export.convertRTMinute
+        numDigitsMZ $export.numDigitsMZ
+        numDigitsRT $export.numDigitsRT
+        intval $.export.intval
     </token>
 
     <xml name="input_peaklist">
-        <param name="convertRTMinute" type="boolean" checked="false" truevalue="TRUE" falsevalue="FALSE" label="Convert retention time (seconds) into minutes" help="Convert the columns rtmed, rtmin and rtmax into minutes"/>
-        <param name="numDigitsMZ" type="integer" value="4" label="Number of decimal places for mass values reported in ions' identifiers." help="A minimum of 4 decimal places is recommended. Useful to avoid duplicates within identifiers" />
-        <param name="numDigitsRT" type="integer" value="0" label="Number of decimal places for retention time values reported in ions' identifiers." help="Useful to avoid duplicates within identifiers" />
-        <param name="intval" type="select" label="General used intensity value" help="[intval] See the help section below">
-            <option value="into" selected="true">into</option>
-            <option value="maxo" >maxo</option>
-            <option value="intb">intb</option>
-        </param>
+        <section name="export" title="Export options">
+            <param name="convertRTMinute" type="boolean" checked="false" truevalue="TRUE" falsevalue="FALSE" label="Convert retention time (seconds) into minutes" help="Convert the columns rtmed, rtmin and rtmax into minutes"/>
+            <param name="numDigitsMZ" type="integer" value="4" label="Number of decimal places for mass values reported in ions' identifiers." help="A minimum of 4 decimal places is recommended. Useful to avoid duplicates within identifiers" />
+            <param name="numDigitsRT" type="integer" value="0" label="Number of decimal places for retention time values reported in ions' identifiers." help="Useful to avoid duplicates within identifiers" />
+            <param name="intval" type="select" label="General used intensity value" help="[intval] See the help section below">
+                <option value="into" selected="true">into</option>
+                <option value="maxo" >maxo</option>
+                <option value="intb">intb</option>
+            </param>
+        </section>
+    </xml>
+
+    <xml name="test_peaklist">
+        <section name="export">
+            <param name="convertRTMinute" value="False"/>
+            <param name="numDigitsMZ" value="4" />
+            <param name="numDigitsRT" value="1" />
+            <param name="intval" value="into"/>
+        </section>
+    </xml>
+
+    <!-- annotate_diffreport <test> commun part -->
+    <xml name="test_annotate_diffreport">
+        <section name="groupfwhm">
+            <param name="sigma" value="6"/>
+            <param name="perfwhm" value="0.6"/>
+        </section>
+        <section name="findisotopes">
+            <param name="maxcharge" value="3"/>
+            <param name="maxiso" value="4"/>
+            <param name="minfrac" value="0.5"/>
+        </section>
+        <section name="general">
+            <param name="ppm" value="5"/>
+            <param name="mzabs" value="0.015"/>
+            <param name="max_peaks" value="100"/>
+        </section>
+        <conditional name="options">
+            <section name="diffreport">
+                <param name="option" value="show"/>
+                <param name="eicmax" value="200"/>
+                <param name="eicwidth" value="200"/>
+                <param name="value" value="into"/>
+                <param name="h" value="480"/>
+                <param name="w" value="640"/>
+                <param name="mzdec" value="2"/>
+                <param name="sortpval" value="False"/>
+            </section>
+        </conditional>
+        <expand macro="test_peaklist"/>
+    </xml>
+
+    <xml name="test_annotate_diffreport_quick">
+        <param name="quick" value="FALSE"/>
+        <section name="groupcorr">
+            <param name="cor_eic_th" value="0.75"/>
+            <param name="graphMethod" value="hcs"/>
+            <param name="pval" value="0.05"/>
+            <param name="calcCiS" value="True"/>
+            <param name="calcIso" value="False"/>
+            <param name="calcCaS" value="False"/>
+        </section>
     </xml>
 
     <token name="@HELP_AUTHORS@">
