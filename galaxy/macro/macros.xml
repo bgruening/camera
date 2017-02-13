@@ -90,7 +90,7 @@
         convertRTMinute $export.convertRTMinute
         numDigitsMZ $export.numDigitsMZ
         numDigitsRT $export.numDigitsRT
-        intval $.export.intval
+        intval $export.intval
     </token>
 
     <xml name="input_peaklist">
@@ -108,7 +108,7 @@
 
     <xml name="test_peaklist">
         <section name="export">
-            <param name="convertRTMinute" value="False"/>
+            <param name="convertRTMinute" value="True"/>
             <param name="numDigitsMZ" value="4" />
             <param name="numDigitsRT" value="1" />
             <param name="intval" value="into"/>
@@ -131,9 +131,9 @@
             <param name="mzabs" value="0.015"/>
             <param name="max_peaks" value="100"/>
         </section>
-        <conditional name="options">
+        <conditional name="diffreport_conditional">
+            <param name="option" value="show"/>
             <section name="diffreport">
-                <param name="option" value="show"/>
                 <param name="eicmax" value="200"/>
                 <param name="eicwidth" value="200"/>
                 <param name="value" value="into"/>

@@ -55,16 +55,16 @@
             calcCaS $quick_block.groupcorr.calcCaS
         #end if
 
-        #if $options.option == "show":
+        #if $diffreport_conditional.option == "show":
             ## diffreport
             runDiffreport TRUE
-            eicmax $options.diffreport.eicmax
-            eicwidth $options.diffreport.eicwidth
-            value $options.diffreport.value
-            sortpval $options.diffreport.sortpval
-            h $options.diffreport.h
-            w $options.diffreport.w
-            mzdec $options.diffreport.mzdec
+            eicmax $diffreport_conditional.diffreport.eicmax
+            eicwidth $diffreport_conditional.diffreport.eicwidth
+            value $diffreport_conditional.diffreport.value
+            sortpval $diffreport_conditional.diffreport.sortpval
+            h $diffreport_conditional.diffreport.h
+            w $diffreport_conditional.diffreport.w
+            mzdec $diffreport_conditional.diffreport.mzdec
             new_file_path ${__new_file_path__}/primary_${output_diffreport.id}_
         #end if
 
@@ -139,7 +139,7 @@
         </conditional>
 
         <!-- Diffreport specific parameters -->
-        <conditional name="options">
+        <conditional name="diffreport_conditional">
             <param name="option" type="select" label="Number of condition">
                 <option value="hide" selected="true">One condition</option>
                 <option value="show">Two or more conditions</option>
@@ -178,7 +178,7 @@
             </change_format>
         </data>
         <data name="output_diffreport" format="text" label="${image.name[:-6]}.annotateDiffreport" hidden="true">
-            <filter>(options['option'] == 'show')</filter>
+            <filter>(diffreport_conditional['option'] == 'show')</filter>
         </data>
     </outputs>
 
@@ -434,7 +434,9 @@ Output files
 Changelog/News
 --------------
 
-**Version 2.2.0 - 03/02/2017**
+**Version 2.2.0 - 13/02/2017**
+
+- IMPROVEMENT: Add sections within the form to improve the readability
 
 - BUGFIX: the diffreport ids didn't convert the rt in minute as the other export
 
